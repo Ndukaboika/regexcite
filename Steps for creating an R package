@@ -1,0 +1,164 @@
+library(devtools)
+dir.create("~/Desktop/regexcite") # create a directory
+create_package("~/Desktop/regexcite") # create a regexcite package directory
+
+# Need to work o this more
+use_git() # if it doesn't work, use the below and run the function again
+usethis::use_git_config(
+       user.name  = "NdukaBoika",
+       user.email = "https://github.com/Ndukaboika"
+   )
+
+# the function i created
+strsplit1 <- function(x, split) {
+
+  strsplit(x, split = "split")[[1]]
+}
+
+# But we need a package, so we create an R scrpit that will contain the strsplit function in it
+use_r("strsplit1")
+
+# We need to load the everything in the R directory into the R session or conssole. We use the function below
+load_all()
+
+# and call the function(package) again and running it
+x <- "alpha, beta, charlie, delta"
+strsplit1(x, split = ",")
+
+# Next you wanna check your progress on how the package building is coming along
+check()
+
+# Go over the description and edit
+# I used the below function for the license section. run it in the console
+use_mit_license()
+
+## commit on github
+
+# Next you want to add some documentation to the r function . Helpful in creating the help doc
+# Go to code menu ---> insert Roxygen skeleton
+
+## Its going to look like the below
+
+#' Split a string
+#'
+#' @param x  A character vector with one element
+#' @param split what to split on
+#'
+#' @returns A character vector
+#' @export
+#'
+#' @examples
+#' x <- "alpha, beta, charlie, delta"
+#' strsplit1(x, split = ",")
+#'
+
+# Next document using the function below
+document()
+
+# once you do the above successfully, use the help function ?
+?strsplit1
+
+## commit to git
+# do another check
+check()
+
+-----------------------------------------------
+# Next is install the package using the function below
+  install()
+
+# and you can load it into the session using the function below
+library()
+
+
+--------------------------------------------------------
+
+# Testing Framework to test the code using the function below (very important function)
+  # dont touch the test.R file
+use_testthat() # This creates a 'testthat' file and R script file
+
+# to create the actual test, use the below function with the R script name containing the package (function)
+use_test("strsplit1") # this creates a "test-strsplit1.R file" in the "testthat" folder. The file opens auto. Save it.
+
+# Replace the default test with your actual test using the function below
+
+test_that("strsplit1() split a string", {
+  expect_equal(strsplit1("a,b,c", split = ","), c("a","b","c")) # First part is the actual, second part is the expected
+})
+
+# Go to the environment pane and click on "build" ----> click on the "test" button. you should see that everything passes.
+ # or you can use the below function
+test()
+
+## commite to github
+
+
+------------------------------------------------------------------------
+
+# Say we want to change the code to use the base r function that is ,instead of `strsplit`, we want to use the `str_split`
+
+# we need to bring in other function from the base r package. Note that, built packages usually borrow functions from other packages.
+  # one way to achieve this is by using the function below:
+   use_package("stringr") # The function we need is from the `stringr` package
+## you can see the imports in the description file.
+
+# Now go back to the strsplit1.R file and modify the code. Now the code looks like below
+
+str_split_one <- function(string, pattern, n = Inf) {
+  stopifnot(is.character(string), length(string) <= 1)
+
+  if (length(string =1)){
+    stringr::str_split(string = string, pattern = pattern, n = n)[[1]]
+  } else {
+    character()
+  }
+
+  }
+
+# next, We can save and rename the file using the function below
+rename_files("strsplit1", "str_split_one")
+
+# Next we need to update the parameters in the R package folder file (str_split_one.R),  it now looks like this
+
+#' Split a string
+#'
+#' @param string  A character vector with one element
+#' @inheritParams stringr::str_replace
+#'
+#' @returns A character vector
+#' @export
+#'
+#' @examples
+#' x <- "alpha, beta, charlie, delta"
+#' strsplit1(x, pattern = ",")
+#' strsplit1(x, pattern = ",", n = 2)
+str_split_one <- function(string, pattern, n = Inf) {
+  stopifnot(is.character(string), length(string) <= 1)
+
+  if (length(string ==1)){
+    stringr::str_split(string = string, pattern = pattern, n = n)[[1]]
+  } else {
+    character()
+  }
+
+
+}
+
+# we need to also update the code in the testthat.R (test-str_split_one.R) file in the testthat folder. It looks like this
+
+test_that("str_split_one() split a string", {
+  expect_equal(str_split_one("a,b,c", pattern = ","), c("a","b","c"))
+})
+
+test_that("str_split_one() error if input length > 1", {
+  expect_error(str_split_one(c("a,b", "c,d"), ","))
+})
+
+# next, document the changes or modifications using the code below
+
+document()
+load_all()
+test()
+
+# Then push to github using
+use_git() # You musthave a github account
+
