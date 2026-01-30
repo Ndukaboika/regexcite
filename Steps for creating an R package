@@ -162,3 +162,6 @@ test()
 # Then push to github using
 use_git() # You musthave a github account
 
+# To create a read me file use the helper function below
+
+use_readme_rmd()
